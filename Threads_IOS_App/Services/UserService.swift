@@ -30,8 +30,24 @@ class UserService {
         print("DEBUG: User is \(user)")
     }
     
+    static func fetchUsers() async throws -> [User] {
+        guard let currentUserId = Auth.auth().currentUser?.uid else { return [] }
+        let snapshot = try await Firestore.firestore().collection("user").getDocuments()
+        let users = snapshot.documents.compactMap({ try? $0.data(as: User.self) })
+        return users.filter({$0.id != currentUserId})
+    }
+    
     func reset(){
         self.currentUser = nil
+    }
+    
+    @MainActor
+    func updateUserProfilelmage(withlmageUrl imageUrl: String) async throws {
+        guard let currentUid = Auth.auth().currentUser?.uid else { return }
+        try await Firestore.firestore().collection("user").document(currentUid).updateData([
+            "profileImageUrl": imageUrl
+        ])
+        self.currentUser?.profilepic = imageUrl
     }
     
 }

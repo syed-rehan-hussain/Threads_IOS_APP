@@ -9,17 +9,19 @@ import SwiftUI
 
 struct ExploreView: View {
     @State private var searchText = ""
+    @StateObject var viewModel = ExploreViewModel()
     var body: some View {
         NavigationView{
             ScrollView(showsIndicators: false){
                 LazyVStack {
-                    ForEach(1...10, id: \.self) { count in
-                        VStack{
-                            UserCell()
-                            
-                            Divider()
+                    ForEach(viewModel.users) { user in
+                        NavigationLink(destination: OtherProfileView(user: user)) {
+                            VStack{
+                                UserCell(user: user)
+                                Divider()
+                            }
+                            .padding(.vertical, 6)
                         }
-                        .padding(.vertical, 6)
                     }
                 }
             }

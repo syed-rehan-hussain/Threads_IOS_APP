@@ -6,6 +6,8 @@
 //
 
 import Combine
+import PhotosUI
+import SwiftUI
 
 class ProfileViewModel: ObservableObject {
     @Published var currentUser: User?
@@ -21,4 +23,5 @@ class ProfileViewModel: ObservableObject {
             print("Debug user from vm combine is \(user)")
         }.store(in: &cancellables)
     }
+
 }

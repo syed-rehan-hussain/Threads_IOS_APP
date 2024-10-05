@@ -9,96 +9,43 @@ import SwiftUI
 
 struct ProfileView: View {
     @StateObject var viewModel = ProfileViewModel()
-    @State private var selectedFilter: ProfileThreadFilter = .threads
-    @Namespace var animation
-    
+    @State private var showEditProfile = false
     private var currentUser: User?{
         return viewModel.currentUser
     }
-    private var filterBarWidth: CGFloat{
-        let count = CGFloat(ProfileThreadFilter.allCases.count)
-        return UIScreen.main.bounds.width / count - 16
-    }
+    
     var body: some View {
         NavigationView {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 20) {
-                    HStack(alignment: .top) {
-                        VStack(alignment: .leading, spacing: 12) {
-                            VStack(alignment: .leading, spacing: 4){
-                                Text(currentUser?.fullname ?? "")
-                                    .font(.title2)
-                                    .fontWeight(.semibold)
-                                
-                                Text(currentUser?.username ?? "")
-                                    .font(.subheadline)
-                            }
-                            if let bio = currentUser?.bio{
-                                Text(bio)
-                                    .font(.footnote)
-                            }
-                            
-                            
-                            Text("2 followers")
-                                .font(.caption)
-                                .foregroundColor(.gray)
-                        }
-                        
-                        Spacer()
-                        
-                        CircularProfileImageView()
-                    }
+                    ProfileHeaderView(user: currentUser)
                     
                     Button{
-                        
+                        showEditProfile.toggle()
                     } label: {
-                        Text("Follow")
+                        Text("Edit Profile")
                             .font(.subheadline)
                             .fontWeight(.semibold)
-                            .foregroundColor(.white)
+                            .foregroundColor(.black)
                             .frame(width: 352, height: 32)
-                            .background(.black)
+                            .background(.white)
                             .cornerRadius(8)
+                            .overlay{
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(.gray, lineWidth: 1)
+                            }
                     }
                     
-                    VStack{
-                        HStack{
-                            ForEach(ProfileThreadFilter.allCases){filter in
-                                VStack{
-                                    Text(filter.title)
-                                        .font(.subheadline)
-                                        .fontWeight(selectedFilter == filter ? .semibold : .regular)
-                                    
-                                    if selectedFilter == filter{
-                                        Rectangle()
-                                            .foregroundColor(.black)
-                                            .frame(width: filterBarWidth, height: 1)
-                                            .matchedGeometryEffect(id: "item", in: animation)
-                                    }else{
-                                        Rectangle()
-                                            .foregroundColor(.clear)
-                                            .frame(width: filterBarWidth, height: 1)
-                                    }
-                                }
-                                .onTapGesture {
-                                    withAnimation(.spring()){
-                                        selectedFilter = filter
-                                    }
-                                }
-                            }
-                        }
-                        
-                        LazyVStack() {
-                            ForEach(1 ... 10, id: \.self) { thread in
-                                ThreadCell()
-                            }
-                        }
-                    }
-                    .padding(.vertical, 8)
+                   UserContentListView()
                     
                 }
                 .padding(.horizontal)
             }
+            .sheet(isPresented: $showEditProfile, content: {
+                if let user = currentUser {
+                    EditProfileView(user: user)
+                }
+            })
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing){
                     Button{
@@ -112,6 +59,8 @@ struct ProfileView: View {
     }
 }
 
-#Preview {
-    ProfileView()
+struct ProfileView_Previews: PreviewProvider {
+    static var previews: some View{
+        ProfileView()
+    }
 }

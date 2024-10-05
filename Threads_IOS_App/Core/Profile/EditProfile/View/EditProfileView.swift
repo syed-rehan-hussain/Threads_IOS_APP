@@ -6,11 +6,16 @@
 //
 
 import SwiftUI
+import PhotosUI
 
 struct EditProfileView: View {
+    let user: User
     @State private var link:String = ""
     @State private var bio:String = ""
     @State private var isPrivateProfile: Bool = false
+    @Environment(\.dismiss) var dismiss
+    @StateObject var viewModel =  EditProfileViewModel()
+    
     var body: some View {
         NavigationView{
             ZStack{
@@ -22,13 +27,23 @@ struct EditProfileView: View {
                             Text("Name")
                                 .fontWeight(.semibold)
                                  
-                            Text("David Metzger")
+                            Text(user.fullname)
                                 .font(.subheadline)
                         }
                         
                         Spacer()
                         
-                        CircularProfileImageView()
+                        PhotosPicker(selection: $viewModel.selectedItem) {
+                            if let image = viewModel.profileImage {
+                                image
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 40, height: 40)
+                                    .clipShape(Circle())
+                            }else {
+                                CircularProfileImageView()
+                            }
+                        }
                     }
                     Divider()
                     
@@ -68,14 +83,15 @@ struct EditProfileView: View {
             .toolbar{
                 ToolbarItem(placement: .navigationBarLeading){
                     Button("Cancel") {
-                        
+                        dismiss()
                     }
                     .font(.subheadline)
                     .foregroundColor(.black)
                 }
                 ToolbarItem(placement: .navigationBarTrailing){
                     Button("Done") {
-                        
+                        Task{ try await viewModel.UpdateUserData() }
+                        dismiss()
                     }
                     .font(.headline)
                     .foregroundColor(.black)
@@ -85,6 +101,9 @@ struct EditProfileView: View {
     }
 }
 
-#Preview {
-    EditProfileView()
+
+struct EditProfileView_Previews: PreviewProvider {
+    static var previews: some View{
+        EditProfileView(user: dev.user)
+    }
 }
