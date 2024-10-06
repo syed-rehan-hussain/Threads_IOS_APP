@@ -8,12 +8,13 @@
 import SwiftUI
 
 struct FeedView: View {
+    @StateObject var viewModel = FeedViewModel()
     var body: some View {
         NavigationView{
             ScrollView(showsIndicators: false){
                 LazyVStack{
-                    ForEach(1 ... 10, id: \.self) { count in
-                        ThreadCell()
+                    ForEach(viewModel.threads) { thread in
+                        ThreadCell(thread: thread)
                     }
                 }
             }
@@ -39,6 +40,8 @@ struct FeedView: View {
     }
 }
 
-#Preview {
+struct FeedView_Previews: PreviewProvider {
+    static var previews: some View{
         FeedView()
+    }
 }

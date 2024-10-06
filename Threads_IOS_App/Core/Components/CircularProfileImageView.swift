@@ -6,17 +6,50 @@
 //
 
 import SwiftUI
+import Kingfisher
 
-struct CircularProfileImageView: View {
-    var body: some View {
-        Image(.davidMetzger)
-            .resizable()
-            .scaledToFill()
-            .frame(width: 40, height: 40)
-            .clipShape(Circle())
+enum ProfileImageSize {
+    case xxsmall
+    case xsmall
+    case small
+    case medium
+    case large
+    case xlarge
+    
+    var dimension: CGFloat{
+        switch self{
+            case .xxsmall: return 28
+            case .xsmall: return 32
+            case .small: return 40
+            case .medium: return 48
+            case .large: return 64
+            case .xlarge: return 80
+        }
     }
 }
 
-#Preview {
-    CircularProfileImageView()
+struct CircularProfileImageView: View {
+    var user: User?
+    let size: ProfileImageSize
+   
+    var body: some View {
+        if let imageUrl = user?.profileImageUrl {
+            KFImage(URL(string: imageUrl))
+                .resizable()
+                .scaledToFill()
+                .frame(width: size.dimension, height: size.dimension)
+                .clipShape(Circle())
+        } else {
+            Image(systemName: "person.circle.fill")
+                .resizable()
+                .frame(width: size.dimension, height: size.dimension)
+                .foregroundColor(Color(.systemGray4))
+        }
+    }
+}
+
+struct CircularProfileImageView_Previews: PreviewProvider {
+    static var previews: some View{
+        CircularProfileImageView(user: dev.user, size: .medium)
+    }
 }
