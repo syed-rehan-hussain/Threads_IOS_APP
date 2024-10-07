@@ -27,7 +27,7 @@ struct OtherProfileView: View {
                         .cornerRadius(8)
                 }
                 
-                UserContentListView()
+                UserContentListView(user: user)
             }
             .padding(.horizontal)
         }

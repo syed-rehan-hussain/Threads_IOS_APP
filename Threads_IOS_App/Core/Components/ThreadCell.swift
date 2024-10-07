@@ -20,7 +20,7 @@ struct ThreadCell: View {
                             .font(.footnote)
                             .fontWeight(.semibold)
                         Spacer()
-                        Text("10m")
+                        Text(thread.timestamp.timeStampString())
                             .font(.caption)
                             .foregroundColor(.gray)
                         

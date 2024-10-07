@@ -20,7 +20,7 @@ struct FeedView: View {
             }
             
             .refreshable {
-                print("Debug: Refresh Threads")
+                Task { try await viewModel.fetchThread() }
             }
             
             .navigationTitle("Threads")
